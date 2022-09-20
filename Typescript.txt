@@ -1,0 +1,738 @@
+Terminal--> tsc <file-name>
+
+:string
+:number
+:boolean
+:null
+:undefined
+
+
+:any - any type is good
+
+:void - doesn't expect a return// void returns undefined or null
+
+:never - never  // never returns
+----------------------
+objects:
+
+!!!!!!!!!!!!readonly (doesn't allow to update :
+
+type User = {
+    readonly id: number,
+    username: string;
+};
+)
+
+!!!!!!!!!type :
+type Song = {
+    title: string, 
+    artist: string, 
+    numStreams: number, 
+    credits: {
+        producer:string, 
+        writer: string
+    }
+}
+
+function calculatePayout(song: Song): number {
+    return song.numStreams * 0.0033;
+}
+
+function printSong(song: Song): void {
+    console.log(`${song.title} by ${song.artist}`)
+}
+
+const mySong: Song = {
+    title: "Unchained Melody",
+    artist: "Righteous Brothers",
+    numStreams: 12873321,
+    credits: {
+        producer: "Phil Spector",
+        writer: "Alex North"
+    }
+}
+
+
+calculatePayout(mySong);
+printSong(mySong);
+
+!!!!!!Intersection Types:
+
+type Circle = {
+    radius: number;
+};
+
+type Colorful = {
+    color: string;
+};
+
+type ColorfulCircle = Circle & Colorful;
+
+const happyFace: ColorfulCircle = {
+    radius: 10,
+    color: "yellow"
+}
+
+
+
+
+--------------------------------
+
+!!!!!!!!!!!ARRAY 
+
+:(type)[]
+: Array<(typpe)>
+string[][] = [["X", "O", "X"], ["O", "X", "O"], ["X", "O", "X"]]; <--- multidimentional string array
+
+-------------------
+
+Unions
+
+let age: number | string = 213
+age = 'hello'
+age = 23
+
+//LITERAL TYPES
+
+let mood: "Happy" | "Sad" = "Happy";
+
+mood = "Sad";
+mood= "Happy";
+
+type DayOfWeek = "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday" | "Saturday" | "Sunday";
+
+let today: DayOfWeek = "Monday";
+
+----------------------
+
+!!!!TUPLES -- tuples are arrays of fixed lenths and order with specific types- like super rigid arrays.
+
+const color: [number, number, string] = [255, 0, "a"]  ;
+
+type HTTPResponse = [number, string];
+
+const response: HTTPResponse = [200, "OK"]
+const noresponse: HTTPResponse = [404, "Not Found"]
+
+const responses: HTTPResponse[] = [[404, "Not Found"], [200, "OK"]];
+
+!!!!!!!!!!!!!ENUMS - allows us to define a set of named constants. we can give these constants numeric or string values.
+
+enum OrderStatus {
+    PENDING,
+    SHIPPED,
+    DELIVERED,
+    RETURNED
+};
+
+const myStatus = OrderStatus.DELIVERED
+
+function isDelivered(status: OrderStatus) {
+    return status === OrderStatus.DELIVERED;
+}
+
+isDelivered(OrderStatus.RETURNED);
+
+enum ArrowKeys {
+    UP= "UP",
+    DOWN = "DOWN",
+    LEFT = "LEFT",
+    RIGHT = "RIGHT",
+};
+
+----------------
+
+!!!!!!!!!!!!!INTERFACES -  serves almost the exact same purpose as type aliases (with slightly different syntax). Only describes objects. We can use them to create reusable, modular types that describes the shapes of object.
+
+interface Point {
+    x: number,
+    y: number,
+};
+
+const pt: Point = { x: 123, y: 234 };
+
+interface Person {
+    readonly id: number,
+    first: string,
+    last: string,
+    nickname?: string,
+    // sayHi: () => string, alternative variant
+    sayHi(): string
+};
+
+const p: Person = {id:21837 , first: 'Jane', last: 'Doe', sayHi: () => { return 'Hi'}};
+
+p.first = "Thomas";
+// p.id = 42331; // Error
+
+interface Product {
+    name: string;
+    price: number;
+    applyDiscount(discount: number):number
+};
+
+const shoes: Product = {
+    name: "Blue suede shoes",
+    price: 100,
+    applyDiscount(amount:number) {
+        const newPrice = this.price * (1 - amount);
+        this.price = newPrice;
+        return this.price;
+    }
+};
+
+console.log(shoes.applyDiscount(0.4));
+
+interface Dog {
+    name: string;
+    age: number;
+};
+
+interface Dog {
+    breed: string;
+    bark(): string;
+};
+
+const elton: Dog = {
+    name: "Elton",
+    age: 0.5,
+    breed: "Australian Shepherd",
+    bark() { 
+        return "Woof Woof!"
+    }
+};
+
+interface ServiceDog extends Dog {
+    job: "drug sniffer" | "bomb" | "guide dog";
+}
+
+const chewy: ServiceDog = {
+    name: "Chewy",
+    age: 4.5,
+    breed: "Lab",
+    bark() {
+        return "Bark!"
+    },
+    job: "guide dog"
+};
+
+interface Persona {
+    name: string;
+};
+
+interface Employee {
+    readonly id: number;
+    email: string;
+};
+
+interface Engineer extends Persona, Employee {
+    level: string,
+    languages: string[]
+};
+
+const pierre: Engineer = {
+    name: "Pierre",
+    id: 1234,
+    email: "pierre@gmail.com",
+    level: "senior",
+    languages: ["typescript", "javascript", "python"]
+};
+
+----------------------
+
+!!!!!!!!!!!!!!COMPILING
+
+tsc --init (CONFIGURATIONS)
+
+tsc --watch <file.name>
+
+tsc (compiles all files)
+
+tsconfig:
+
+  // "files": ["farmstand.ts", "index.ts"]
+  "include": ["src"],
+  "exclude": ["src/dontTouch.ts"]
+
+  if we have node_modules, it's always better to exlude them with "exlude": ["node_modules]
+
+  "outDir": "./<folder-name>",  <-- where the tsc compiles TS into JS.
+
+  target option ---> which ES to compile (you can compile into previous versions)
+
+  strict option --> typechecks become stricter for programming correctness. 
+
+  -----------------------
+
+  class:
+
+  readonly/ private/ public/ protected( similar to private, but allows in child classes) / implements (class must have interface that was implemented) // abstract (child classes that are extended must meet abstract requirements)
+
+// class Player {
+//     public readonly first: string;
+//     public readonly last: string;
+//     private score: number = 0;
+
+//     constructor(first : string, last: string) {
+//         this.first = first;
+//         this.last = last;
+//     }
+
+//     secretMethod():void {
+//         console.log('SECRET METHOD!!!')
+//     }
+// };
+
+// shortcut for the above
+class Player {
+  // public readonly first: string;
+  // public readonly last: string;
+  protected _score: number = 0;
+
+  constructor(public first: string, public last: string) {}
+
+  secretMethod(): void {
+    console.log("SECRET METHOD!!!");
+  }
+
+    get fullName(): string {
+        return this.first + ' ' + this.last;
+    }
+
+    get score(): number {
+        return this._score;
+    }
+
+    set score(newScore: number) {
+        if(newScore < 0) {
+            throw new Error('Score cannot be less than 0');
+        }
+        this._score = newScore;
+    }
+}
+
+class SuperPlayer extends Player {
+    public isAdmin: boolean = true;
+    maxScore() {
+        this._score = 999999;
+    }
+}
+
+const elton = new Player("Elton", "Steele");
+// elton.first = "gage"; // Error: Cannot assign to 'first' because it is a read-only property.
+elton.score = 55;
+
+interface Colorful {
+    color: string;
+};
+
+interface Printable {
+    print(): void;
+}
+
+interface Payable {
+    getPay(): number
+}
+
+class Bike implements Colorful {
+    constructor(public color: string) {}
+}
+
+const bike1 = new Bike('red');
+
+class Jacket implements Colorful, Printable {
+    constructor(public brand: string, public color: string) {}
+
+    print() {
+        console.log(`${this.color} ${this.brand} jacket`);
+    }
+}
+
+const jacket1 = new Jacket('Levi', 'blue');
+
+abstract class Employee {
+    constructor(public first: string, public last: string) {}
+    abstract getPay(): number;
+    greet() {
+        console.log("Hello!");
+    }
+};
+
+class FullTimeEmployee extends Employee {
+    constructor( first: string, last: string, private salary: number) {
+        super(first, last);
+    }
+    getPay(): number {
+        return this.salary;
+    }
+}
+
+class PartTimeEmployee extends Employee {
+    constructor( first: string, last: string, private hourlyRate: number, private hoursWorked: number) {
+        super(first, last);
+    }
+    getPay(): number {
+        return this.hourlyRate * this.hoursWorked;
+    }
+}
+
+const betty = new FullTimeEmployee('Betty', 'White', 95000);
+console.log(betty.getPay());
+
+const bill = new PartTimeEmployee('Bill', 'Billerson', 24, 1100);
+console.log(bill.getPay());
+
+---------------------
+
+!!!!!!GENERICS - allow us to define reusable function and classes that work with multiple types rather than a single type.
+
+// const nums:number[] = [];
+
+// const nums1:Array<number> = [];
+
+// const inputEl = document.querySelector<HTMLInputElement>("#username")!;
+// inputEl.value = "Hacked"
+
+// const btn = document.querySelector<HTMLButtonElement>(".btn")!;
+
+function numberIdentity(item: number): number {
+  return item;
+}
+
+function stringIdentity(item: string): string {
+  return item;
+}
+
+function booleanIdentity(item: boolean): boolean {
+  return item;
+}
+
+// function identity(item: any):any {
+//     return item;
+// }
+
+interface Cat {
+  name: string;
+  breed: string;
+}
+
+function identity<Type>(item: Type): Type {
+  return item;
+}
+
+identity<string>("Hello");
+
+identity<Cat>({ name: "Mimi", breed: "Persian" });
+
+function getRandomElement<T>(list: T[]): T {
+  const randIdx = Math.floor(Math.random() * list.length);
+  return list[randIdx];
+}
+
+console.log(getRandomElement<string>(["a", "b", "c"]));
+console.log(getRandomElement<number>([1, 2, 3, 4, 5]));
+
+const x = 23;
+
+getRandomElement(["a", "v", "asd"]);
+
+function merge<T extends object,U extends object>(object1: T, object2: U) {
+  return { ...object1, ...object2 };
+}
+
+// const comboObj = merge({name: 'colt'}, {pets: ["blue", "elton"]})
+
+const comboObj = merge<{name: string}, {pets: string[]}>({name: 'colt'}, {pets: ["blue", "elton"]})
+
+console.log(merge({name: "Colt"}, {num: 9}));
+
+interface Lengthy {
+    length: number;
+}
+
+function printDoubleLength<T extends Lengthy>(item: T): number {
+        return item.length * 2;
+}
+
+printDoubleLength('HelloWorld');
+// printDoubleLength(25425); // error
+
+function makeEmptyArray<T = number>(): T[] {
+    return [];
+};
+
+const strings  = makeEmptyArray<string>();
+strings.push('fasfasf');
+// strings.push(241) // error
+
+
+interface Song {
+    title: string;
+    artist: string;
+};
+
+interface Video {
+    title: string;
+    creator: string;
+    resolution: string;
+};
+
+// class VideoPlaylist{
+//     public videos: Video[] = [];
+// }
+
+// class SongPlaylist {
+//     public songs: Song[] = [];
+// }
+
+class Playlist<T> {
+    public queue: T[] = [];
+    add(item: T) {
+        this.queue.push(item);
+    }
+}
+
+const songs = new Playlist<Song>();
+songs.add({title: 'Hello', artist: 'Adele'});
+
+const video = new Playlist<Video>();
+video.add({title: 'Hello', creator: 'Adele', resolution: '1080p'});
+
+--------------------------
+
+!!!!!!TYPE NARROWING
+
+typeof/ truthiness guard if(!el)/ IN ("numEpisodes" in media)/ instaceof/ predicates / discriminated unions
+
+//TYPE ALIASES////////////
+
+function triple(value: number | string) {
+    if(typeof value === 'number') {
+        return value * 3;
+    } else {
+        return value.repeat(3);
+    }
+}
+// TRUTHY GUARDS //////////
+const el =document.getElementById("idk");
+
+if(el) {
+    el.innerText = "Hello";
+} else {
+    console.log("No element found");
+}
+
+const printLetters = (word?: string) => {
+    if(word) {
+        for(let char of word) {
+            console.log(char);
+        }
+    } else {
+        console.log("No word provided");
+    }
+};
+// IN TYPE GUARDS //////////
+function someDemo(x: string | number, y: string | boolean) {
+    if(x === y) {
+        x.toUpperCase()
+    }
+};
+
+interface Movie {
+    title: string;
+    duration: number;
+}
+
+interface TVShow {
+    title: string;
+    numEpisodes: number;
+    episodeDuration: number;
+};
+
+function getRunTime(media: Movie | TVShow) {
+    if("numEpisodes" in media) {
+        return media.numEpisodes * media.episodeDuration;
+    }
+    return media.duration;
+}
+
+console.log(getRunTime({title: "Amadeus", duration: 140}));
+console.log(getRunTime({title: "Spongebob", numEpisodes: 80, episodeDuration: 30}));
+
+//INSTACEOF////////
+
+function printFullDate(date: Date | string) {
+    if(date instanceof Date) {
+        console.log(date.toUTCString());
+    } else {
+        console.log(new Date(date).toDateString());
+    }
+};
+
+class User {
+    constructor(public username: string) {}
+
+}
+
+class Company {
+    constructor(public name: string) {}
+
+}
+
+function printName(entity: User| Company) {
+  if(entity instanceof User) {
+    entity.username
+  } else {
+    entity.name
+  }
+};
+//PREDICATE FUNCTIONS//////////
+interface Cat {
+    name: string,
+    numLives: number
+};
+
+interface Dog {
+    name: string,
+    breed: string
+};
+
+function isCat(animal: Cat | Dog): animal is Cat{
+    return (animal as Cat).numLives !== undefined;
+}
+
+function makeNoise(animal: Cat | Dog): string {
+    if(isCat(animal)) {
+        animal
+        return "Meow";
+    } else {
+        return "Woof";
+    }
+}
+
+///Discriminated Unions////////////////////
+
+interface Rooster {
+    name: string;
+    weight: number;
+    age: number;
+    __type: "rooster";
+};
+
+interface Cow {
+    name: string;
+    weight: number;
+    age: number;
+    __type: "cow";
+};
+
+interface Pig {
+    name: string;
+    weight: number;
+    age: number;
+    __type: "pig";
+}
+
+type FarmAnimal = Rooster | Cow | Pig;
+
+function getFarmAnimalSound(animal: FarmAnimal) {
+    switch(animal.__type) {
+        case "cow":
+            return "Moo";
+        case "rooster":
+            return "Cock-a-doodle-doo";
+        case "pig":
+            return "Oink";
+        default:
+            const _exhaustiveCheck: never = animal;
+            return _exhaustiveCheck;
+    }
+
+}
+
+const stevie: Rooster = {
+    name: "Stevie chicks",
+    weight: 2,
+    age: 1.5,
+    __type: "rooster"
+};
+
+console.log(getFarmAnimalSound(stevie));
+
+---------------------------------------
+
+TYPE DECLARATIVE (.d.ts)
+
+import axios from 'axios';
+import _ from 'lodash';
+
+interface User {
+    id: number;
+    name: string;
+    username: string;
+    email: string;
+    address: {
+      street: string;
+      suite: string;
+      city: string;
+      zipcode: string;
+      geo: {
+        lat: string;
+        lng: string;
+      };
+    };
+    phone: string;
+    website: string;
+    company: {
+      name: string;
+      catchPhrase: string;
+      bs: string;
+    };
+  }
+
+axios.get<User>("https://jsonplaceholder.typicode.com/users/1")
+.then(response => {
+    console.log("Woo!!!")
+    printUser(response.data)
+})
+.catch(error => {
+    console.log("ERROR!!!", error);
+});
+
+axios.get<User[]>("https://jsonplaceholder.typicode.com/users")
+.then(response => {
+    console.log("Woo!!!")
+    response.data.forEach(printUser)
+})
+.catch(error => {
+    console.log("ERROR!!!", error);
+});
+
+
+function printUser(user: User) {
+    console.log(user.name);
+    console.log(user.email)
+    console.log(user.phone)
+}
+
+-------------------------------
+
+npm install --save-dev webpack webpack-cli typescript ts-loader
+ npm install --save-dev webpack-dev-server
+
+ npm install --save-dev clean-webpack-plugin
+
+ Check 8th webpack folder
+
+ -------------------------------
+
+ REACT + TS
+ npx create-react-app <my app> --template typescript
+
+ or
+
+ npm install --save typescript @types/node @types/react @types/react-dom @types/jest
+
+
+ ------------------------------
+
